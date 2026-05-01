@@ -9,18 +9,23 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
     });
 
+    const data = await res.json();
     if (res.ok) {
-      router.push("/login"); 
+      router.push("/login");
     } else {
-      alert("Error signing up");
+      setErrorMessage(data.error || "Error signing up");
     }
   };
 
@@ -28,6 +33,7 @@ export default function Signup() {
     <div className="flex h-screen items-center justify-center bg-gray-50">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
+        {errorMessage && <p className="text-red-500 mb-4 text-center">{errorMessage}</p>}
         <input type="text" placeholder="Full Name" required className="w-full border p-3 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={e => setName(e.target.value)} />
         <input type="email" placeholder="Email Address" required className="w-full border p-3 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={e => setEmail(e.target.value)} />
         <input type="password" placeholder="Password" required className="w-full border p-3 mb-6 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={e => setPassword(e.target.value)} />
